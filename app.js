@@ -94,6 +94,35 @@ app.get('/api/v1/papers/:id', (request, response) => {
       } else {
         response.status(404).json({error: `Could not find paper with id ${request.params.id}`});
       }
+    })
+    .catch(error => {
+      response.status(500).json({ error });
+    });
+});
+
+app.get('/api/v1/papers/:id/footnotes', (request, response) => {
+  database('papers').where('id', request.params.id)
+    .then(papers => {
+      if (papers.length) {
+        database('footnotes')
+          .innerJoin('papers', 'papers.id', 'footnotes.paper_id')
+          .where('papers.id', request.params.id)
+          .then(footnotes => {
+            if (footnotes.length) {
+              response.status(200).json(footnotes);
+            } else {
+              response.status(404).json({ error: `Could not find any footnotes for paper with id ${request.params.id}` })
+            }
+          })
+          .catch(error => {
+            response.status(500).json({ error });
+          });
+      } else {
+        response.status(404).json({ error: `Could not find paper with id ${request.params.id}` });
+      }
+    })
+    .catch(error => {
+      response.status(500).json({ error });
     });
 });
 
