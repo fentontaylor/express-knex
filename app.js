@@ -70,14 +70,25 @@ app.post('/api/v1/footnotes', (request, response) => {
     }
   }
 
-  database('footnotes').insert(footnote, 'id')
-    .then(footnote => {
-      response.status(201).json({ id: footnote[0] })
-    })
-    .catch(error => {
-      response.status(500).json({ error })
+  database('papers').where('id', footnote.paper_id)
+    .then(paper => {
+      if (paper.length) {
+        database('footnotes').insert(footnote, 'id')
+          .then(footnote => {
+            response.status(201).json({ id: footnote[0] })
+          })
+          .catch(error => {
+            response.status(500).json({ error })
+          });
+      } else {
+        response.status(404).json({ error: `Could not find paper with id ${footnote.paper_id}`})
+      }
     });
 });
+
+// app.get('/api/v1/papers/:id', (request, response) => {
+//   database('papers')
+// });
 
 app.listen(app.get('port'), () => {
   console.log(`${app.locals.title} is running on ${app.get('port')}.`);
