@@ -44,6 +44,17 @@ module.exports = {
     migrations: {
       tableName: 'knex_migrations'
     }
-  }
+  },
+  test: {
+    client: 'pg',
+    connection: 'postgres://localhost/publications_test',
+    migrations: {
+      directory: './db/migrations'
+    },
+    seeds: {
+      directory: './db/seeds/dev'
+    },
+    useNullAsDefault: true
+  },
 
 };
